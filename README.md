@@ -1,7 +1,7 @@
 # Golf Course Analyzer
-Welcome to the Golf Course Analyzer project! This application allows users to manage and analyze golf courses, including calculating and visualizing course difficulties based on various metrics.
+# Welcome to the Golf Course Analyzer project! This application allows users to manage and analyze golf courses, including calculating and visualizing course difficulties based on various metrics.
 
-Table of Contents
+# Table of Contents
 
 About the Project
 
@@ -19,11 +19,11 @@ License
 
 Acknowledgments
 
--About the Project
+- About the Project
 
 Golf Course Analyzer is designed to help golf enthusiasts and course managers store, analyze, and visualize golf course data. The primary focus is on calculating the difficulty of each course based on metrics such as Slope and Rating, and presenting these results in a visually appealing manner.
 
--Features
+- Features
 
 Add, edit, and delete golf course entries
 
@@ -35,7 +35,7 @@ Customizable menu options for easy navigation
 
 Error handling and user prompts for smooth interaction
 
--Technologies Used
+- Technologies Used
 
 Python: Core programming language
 
@@ -45,7 +45,7 @@ Plotly: Library for creating interactive charts
 
 Pandas: Data manipulation and analysis
 
--Getting Started
+- Getting Started
 
 Prerequisites
 
@@ -53,7 +53,7 @@ Python 3.x
 
 SQLite
 
-Installation
+- Installation
 
 Clone the repository:
 
@@ -69,7 +69,7 @@ bash
 
 pip install -r requirements.txt
 
-Usage
+- Usage
 
 Run the main script to start the application:
 
@@ -87,11 +87,11 @@ Calculate Difficulty: The program calculates and stores the difficulty based on 
 
 Visualize Data: Generate interactive bar charts showing course difficulties.
 
--License
+- License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
--Acknowledgments
+- Acknowledgments
 
 Thanks to Copilot for guidance and support.
 
