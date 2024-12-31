@@ -1,23 +1,23 @@
 # Golf Course Analyzer
 Welcome to the Golf Course Analyzer project! This application allows users to manage and analyze golf courses, including calculating and visualizing course difficulties based on various metrics.
 
-//Table of Contents//
+Table of Contents
 
-//About the Project//
+About the Project
 
-//Features//
+Features
 
-//Technologies Used//
+Technologies Used
 
-//Getting Started//
+Getting Started
 
-// Installation//
+Installation
 
-//Usage//
+Usage
 
-//License//
+License
 
-//Acknowledgments//
+Acknowledgments
 
 -About the Project
 
