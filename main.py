@@ -193,7 +193,7 @@ def grabDifficulty():
             results = []
             for row in rows:
                 course, cType, yardage, slope, rating = row
-                difficulty = (math.sqrt(slope + rating))/10 if slope and rating != 0 else 0
+                difficulty = ((math.sqrt(slope + rating))/10)-1 if slope and rating != 0 else 0
                 results.append((*row, difficulty))
             
             # Sorts results
@@ -214,7 +214,7 @@ def grabDifficulty():
                           text="Yardage", 
                           template="plotly_dark",
                           hover_data={"Type": True})
-            barG.update_layout(yaxis=dict(range=[0, 2.5]),
+            barG.update_layout(yaxis=dict(range=[0, 1]),
                                hoverlabel=dict(font=dict(color='white')))
             barG.update_traces(textposition="inside", 
                                texttemplate='%{text:,} yds', 
