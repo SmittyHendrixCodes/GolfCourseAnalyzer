@@ -1,0 +1,5 @@
+{
+    "db_path": "GolfCourses.db",
+    "export_path": "./exports",
+    "default_fn": "courses"
+}
