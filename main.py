@@ -93,7 +93,10 @@ def loadConfig(config_path='GolfDataAnalysis\config.json'):
     return config
 
 def dbConnCourses():
-    conn = sqlite3.connect("GolfCourses.db")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(script_dir, "GolfCourses.db")
+    
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
     createCoursesTable = """
@@ -109,11 +112,10 @@ def dbConnCourses():
 
     cursor.execute(createCoursesTable)
     conn.commit()
-    conn.close()
+    return conn, cursor
 
 def checkTable():
-    conn = sqlite3.connect("GolfCourses.db")
-    cursor = conn.cursor()
+    conn, cursor = dbConnCourses()
 
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     tables = cursor.fetchall()
@@ -122,8 +124,7 @@ def checkTable():
     conn.close()
 
 def checkEntry(courseDictList):
-    conn = sqlite3.connect("GolfCourses.db")
-    cursor = conn.cursor()
+    conn, cursor = dbConnCourses()
 
     check_entry = """
     SELECT CourseName FROM Courses
@@ -147,11 +148,11 @@ def checkEntry(courseDictList):
         except sqlite3.Error as e:
             print(f"Error adding courses: {course['Course']}, Error: {e}")
         return existing_course
+    conn.close()
     
 def addCourses(courseDictList):
     # Inserts a new course into the Courses table."""
-    conn = sqlite3.connect("GolfCourses.db")
-    cursor = conn.cursor()
+    conn, cursor = dbConnCourses()
 
     add_courses = """
     INSERT OR IGNORE INTO Courses (CourseName, Type, Yardage, Slope, Rating)
@@ -177,9 +178,12 @@ def addCourses(courseDictList):
     print("All courses have been successfully added to the database.")
 
 def grabDifficulty():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(script_dir, "GolfCourses.db")
+    
     try:
     
-        with sqlite3.connect("GolfCourses.db") as conn:
+        with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
 
             grab_values = """
@@ -225,14 +229,17 @@ def grabDifficulty():
                 barG.show()
             else:
                 pass
-
+        conn.close()
     except sqlite3.Error as e:
         print(f"An error occured: {e}")  
 
 def showCourses():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(script_dir, "GolfCourses.db")
+    
     try:
     
-        with sqlite3.connect("GolfCourses.db") as conn:
+        with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
 
             show_courses = """
@@ -249,6 +256,7 @@ def showCourses():
                 print(tabulate(rows, headers=headers, tablefmt="grid"))
             else:
                 print("No courses found in database.")
+        conn.close()
     except sqlite3.Error as e:
         print(f"An error occured: {e}")
 
@@ -271,8 +279,7 @@ def readCoursesDatabase():
         sanitized_path = sanitized_fn(path_input)
         path = os.path.join(export_path, f"{sanitized_path}.json")
 
-        conn = sqlite3.connect("GolfCourses.db")
-        cursor = conn.cursor()
+        conn, cursor = dbConnCourses()
 
         read_courses = """
         SELECT * FROM Courses
