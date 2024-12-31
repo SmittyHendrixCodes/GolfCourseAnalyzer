@@ -11,6 +11,8 @@ Welcome to the Golf Course Analyzer project! This application allows users to ma
 
 //Getting Started//
 
+// Installation//
+
 //Usage//
 
 //License//
@@ -51,22 +53,30 @@ Python 3.x
 
 SQLite
 
--Installation
+Installation
 
 Clone the repository:
 
 bash
+
 git clone https://github.com/your-username/golf-course-analyzer.git
+
 cd golf-course-analyzer
+
 Install the required packages:
 
 bash
+
 pip install -r requirements.txt
+
 Usage
+
 Run the main script to start the application:
 
 bash
+
 python main.py
+
 Navigate through the menu options to add courses, view calculated difficulties, and visualize the data.
 
 Example Workflow
