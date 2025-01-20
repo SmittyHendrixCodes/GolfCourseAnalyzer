@@ -1,6 +1,8 @@
 # Golf Course Analyzer
 # Welcome to the Golf Course Analyzer project! This application allows users to manage and analyze golf courses, including calculating and visualizing course difficulties based on various metrics.
 
+# IMPORTANT - Please unzip the file prior to running the application - IMPORTANT #
+
 # Table of Contents
 
 About the Project
@@ -21,15 +23,21 @@ Acknowledgments
 
 - About the Project
 
-Golf Course Analyzer is designed to help golf enthusiasts and course managers store, analyze, and visualize golf course data. The primary focus is on calculating the difficulty of each course based on metrics such as Slope and Rating, and presenting these results in a visually appealing manner.
+Golf Course Analyzer is designed to help golf enthusiasts and course managers store, analyze, and visualize golf course data. The two primary focused are (1) calculating the difficulty of each course based on metrics such as Slope and Rating, and presenting these results in a visually appealing manner, and (2) calculating the efficiency of Golfers using data provided by the golfer themselves.
 
 - Features
 
-Add, edit, and delete golf course entries
+Add, (edit and delete in progress) golf course entries
+
+Add, (edit and delete in progress) ggolfer data entries
 
 Calculate the difficulty of courses using Slope and Rating
 
+Calculate the efficiency of a Golfer using general data
+
 Visualize course difficulty with interactive bar charts
+
+Visualize strengths and weaknesses of Golfers
 
 Customizable menu options for easy navigation
 
@@ -45,6 +53,8 @@ Plotly: Library for creating interactive charts
 
 Pandas: Data manipulation and analysis
 
+PyQt5: GUI for user firnedly experience
+
 - Getting Started
 
 Prerequisites
@@ -52,6 +62,8 @@ Prerequisites
 Python 3.x
 
 SQLite
+
+PyQt5
 
 - Installation
 
@@ -68,6 +80,8 @@ Install the required packages:
 bash
 
 pip install -r requirements.txt
+
+Unzip the downloaded repository
 
 - Usage
 
@@ -93,6 +107,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - Acknowledgments
 
-Thanks to Copilot for guidance and support.
+Thanks to David Kerka and Sam Barrett (and Copilot) for guidance and support.
 
-# Special mention to Plotly and Pandas for their amazing libraries.
+# Special mention to Plotly, Pandas, and PyQt5 for their amazing libraries.
