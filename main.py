@@ -16,9 +16,10 @@ import random
 import string
 import os
 from dotenv import load_dotenv
+import PyQt5
 import plotly.express as px
 import plotly.graph_objects as go
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, qApp, QWidget, QPushButton, QLabel, QLineEdit, QFormLayout, QHBoxLayout, QVBoxLayout, QSizePolicy, QTableView, QTableWidget, QTableWidgetItem, QButtonGroup, QHeaderView, QSpacerItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, qApp, QWidget, QStackedWidget, QPushButton, QLabel, QLineEdit, QComboBox, QFormLayout, QHBoxLayout, QVBoxLayout, QSizePolicy, QTableView, QTableWidget, QTableWidgetItem, QButtonGroup, QHeaderView, QSpacerItem
 from PyQt5.QtGui import QPainter, QColor, QPen, QPixmap, QPalette, QBrush
 from PyQt5.QtCore import Qt, QTimer, QObject, QAbstractTableModel, QSize
 from PyQt5.QtSql import QSqlDatabase, QSqlTableModel
@@ -34,19 +35,18 @@ class AddGolferBioWindow(QMainWindow):
         
         self.bg_image = loadBGImage()
         self.bgImageLabel = QLabel(self)
-        # self.bg_image = QPixmap(r"C:\Users\Smitty Hendrix\Documents\Coding\GolfDataAnalysis\golfappbg.png")
 
-        self.nameLabel = QLabel("Name")
+        self.nameLabel = QLabel("Name:")
         self.nameText = QLineEdit()
-        self.ageLabel = QLabel("Age")
+        self.ageLabel = QLabel("Age:")
         self.ageText = QLineEdit()
-        self.nationLabel = QLabel("Nationality")
+        self.nationLabel = QLabel("Nationality:")
         self.nationText = QLineEdit()
-        self.heightLabel = QLabel("Height (cm)")
+        self.heightLabel = QLabel("Height (cm):")
         self.heightText = QLineEdit()
-        self.weightLabel = QLabel("Weight (kg)")
+        self.weightLabel = QLabel("Weight (kg):")
         self.weightText = QLineEdit()
-        self.handLabel = QLabel("Handedness")
+        self.handLabel = QLabel("Handedness:")
         self.handText = QLineEdit()
         self.dataFormLayout = QFormLayout()
         self.dataFormContainer = QWidget()
@@ -72,7 +72,6 @@ class AddGolferBioWindow(QMainWindow):
         self.bgImageLabel.setGeometry(0, 0, self.width(), self.height())
         self.bgImageLabel.setPixmap(self.bg_image.scaled(self.bgImageLabel.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
         
-        self.addPlayerButton.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")
         self.nameText.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")
         self.nameText.setPlaceholderText("Enter Golfer")
         self.ageText.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")
@@ -86,30 +85,35 @@ class AddGolferBioWindow(QMainWindow):
         self.handText.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")
         self.handText.setPlaceholderText("Enter Preferred Handedness")
 
-        self.nameLabel.setStyleSheet("font-size: 17px; color: blue; font-family: Arial;")
-        self.ageLabel.setStyleSheet("font-size: 17px; color: blue; font-family: Arial;")
-        self.nationLabel.setStyleSheet("font-size: 17px; color: blue; font-family: Arial;")
-        self.heightLabel.setStyleSheet("font-size: 17px; color: blue; font-family: Arial;")
-        self.weightLabel.setStyleSheet("font-size: 17px; color: blue; font-family: Arial;")
-        self.handLabel.setStyleSheet("font-size: 17px; color: blue; font-family: Arial;")
+        for lineEdit in [self.nameText, self.ageText, self.nationText, self.heightText, self.weightText, self.handText]:
+            palette = lineEdit.palette()
+            palette.setColor(QPalette.PlaceholderText, QColor("black"))
+            lineEdit.setPalette(palette)
+
+        self.nameLabel.setStyleSheet("font-size: 17px; color: black; font-family: Arial;")
+        self.ageLabel.setStyleSheet("font-size: 17px; color: black; font-family: Arial;")
+        self.nationLabel.setStyleSheet("font-size: 17px; color: black; font-family: Arial;")
+        self.heightLabel.setStyleSheet("font-size: 17px; color: black; font-family: Arial;")
+        self.weightLabel.setStyleSheet("font-size: 17px; color: black; font-family: Arial;")
+        self.handLabel.setStyleSheet("font-size: 17px; color: black; font-family: Arial;")
 
         self.addPlayerButton.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.addPlayerButton.setMaximumSize(200, 50)
         self.addPlayerButton.setMinimumSize(100, 33)
         self.addPlayerButton.clicked.connect(self.clickAddGolfer)
-        self.addPlayerButton.setStyleSheet("font-size: 12px; font-family: Arial;")
+        self.addPlayerButton.setStyleSheet("background-color: white; color: black; padding: 5px; border: 1px solid black; font-size: 12px; font-family: Arial;")
 
         self.backButton.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.backButton.setMinimumSize(100, 25)
         self.backButton.setMaximumSize(200, 25)
         self.backButton.clicked.connect(self.clickBackButton)
-        self.backButton.setStyleSheet("font-size: 12px; font-family: Arial;")
+        self.backButton.setStyleSheet("background-color: white; color: black; padding: 5px; border: 1px solid black; font-size: 12px; font-family: Arial;")
 
         for lineEdit in [self.nameText, self.ageText, self.nationText, self.heightText, self.weightText, self.handText]:
             lineEdit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             lineEdit.setMinimumSize(200, 25)
             lineEdit.setMaximumSize(250, 33)
-            lineEdit.setStyleSheet("font-size: 12px; font-family: Arial;")
+            lineEdit.setStyleSheet("font-size: 12px; font-family: Arial; color: black; background-color: white")
 
         self.dataFormLayout.addRow(self.nameLabel, self.nameText)
         self.dataFormLayout.addRow(self.ageLabel, self.ageText)
@@ -245,17 +249,212 @@ class AddGolferBioWindow(QMainWindow):
             print("All data on THE GOLFERS NAME has been pulled.")
             print(data)
 
-class Course:
-    def __init__(self, course, cType, yardage, slope, rating):
+class CourseCompareWindow(QMainWindow, QWidget):
+    def __init__(self):
+        super().__init__()
 
-        self.course = course
-        self.cType = cType
-        self.yardage = yardage
-        self.slope = slope
-        self.rating = rating
+        self.bg_image = loadBGImage()
+        self.bgImageLabel = QLabel(self)
 
-    def __str__(self):
-        return f"Course Name: {self.course}/n cType: {self.cType}/n Yardage: {self.yardage}/n Slope: {self.slope}/n Rating: {self.rating}/n"
+        self.widget = QWidget()
+        self.compareButton = QPushButton("Compare")
+        self.backButton = QPushButton("Back")
+        self.comboBox1 = QComboBox()
+        self.comboBox2 = QComboBox()
+        self.webView = QWebEngineView()
+        self.vBox = QVBoxLayout()
+        self.hBox = QHBoxLayout()
+        self.vBox1 = QVBoxLayout()
+        self.mainLayout = QVBoxLayout()
+
+        self.initUI()
+
+    def initUI(self):
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('File')
+
+        exitAction = QAction('Exit', self)
+        exitAction.triggered.connect(qApp.quit)
+        fileMenu.addAction(exitAction)
+
+        self.setGeometry(200, 200, 600, 400)
+        self.setWindowTitle('Golf Course Difficulty Comparison')
+
+        self.webView.setFixedSize(800, 600)
+
+        self.bgImageLabel.setGeometry(0, 0, self.width(), self.height())
+        self.bgImageLabel.setPixmap(self.bg_image.scaled(self.bgImageLabel.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+
+        for button in [self.backButton, self.compareButton]:
+            button.setStyleSheet("border: 1px solid black; font-size: 15px; background-color: white; color: black; font-family: Arial;")
+            button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            button.setMinimumSize(150, 25)
+            button.setMaximumSize(200, 33)
+
+        for combo in [self.comboBox1, self.comboBox2]:
+            combo.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            combo.setMinimumSize(150, 25)
+            combo.setMaximumSize(200, 33)
+            combo.setStyleSheet("border: 2px solid black; font-size: 15px; color: black; font-family: Arial; background-color: white;")
+
+        data = self.comboBoxPop()
+        self.comboBox1.addItems(data)
+        self.comboBox1.currentIndexChanged.connect(self.on_change)
+        self.comboBox2.addItems(data)
+
+        self.compareButton.clicked.connect(self.clickCompareButton)
+        self.backButton.clicked.connect(self.clickBackButton)
+
+        self.vBox.addWidget(self.webView)
+        self.hBox.addStretch(1)
+        self.hBox.addWidget(self.comboBox1)
+        self.hBox.addWidget(self.comboBox2)
+        self.hBox.addStretch(1)
+        self.vBox1.addWidget(self.compareButton, alignment=Qt.AlignCenter)
+        self.vBox1.addWidget(self.backButton, alignment=Qt.AlignCenter)
+        self.mainLayout.addLayout(self.vBox)
+        self.mainLayout.addLayout(self.hBox)
+        self.mainLayout.addLayout(self.vBox1)
+
+        self.widget.setLayout(self.mainLayout)
+        self.setCentralWidget(self.widget)
+
+        self.showRadar(self.comboBox1.currentText())
+
+    def comboBoxPop(self):
+        conn, cursor = dbConnCourses()
+
+        get_courses = """
+        SELECT CourseName FROM Courses;
+        """
+        cursor.execute(get_courses)
+        data = cursor.fetchall()
+        conn.close()
+        return [item[0] for item in data]
+
+    def getCourses(self, course_id):
+        conn, cursor = dbConnCourses()
+
+        get_courses = """
+        SELECT Yardage, Slope, Rating FROM Courses WHERE CourseName = ?;
+        """
+        cursor.execute(get_courses, (course_id,))
+        rows = cursor.fetchall()
+
+        columns = [description[0] for description in cursor.description]
+        data = pd.DataFrame(rows, columns=columns)
+
+        normalized_values = []
+        max_values = [10000] + [200] + [100]
+
+        for idx, column in enumerate(columns):
+            max_val = max_values[idx]
+            normalized_values.append(data[column] / max_val)
+
+        normalized_data = pd.concat(normalized_values, axis=1)  
+
+        colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A5', '#A533FF', '#33FFA5', '#FF5733', '#33FF57', '#3357FF', '#FF33A5', '#A533FF', '#33FFA5']
+
+        fig = go.Figure()
+
+        fig.add_trace(go.Scatterpolar(
+            r=normalized_data.iloc[0],
+            theta=columns,
+            fill='toself',
+            fillcolor='lightcoral',
+            marker=dict(color=colors),
+            line=dict(color='crimson', width=2),
+            name=f"{self.comboBox1.currentText()}" + " Statistics"
+        ))
+        fig.update_layout(
+            polar=dict(
+                radialaxis=dict(
+                    visible=True,
+                    tickvals=[0, .2, .4, .6, .8, 1.0],
+                    ticktext=[],
+                    range=[0, 1]
+                )
+            ),
+            showlegend=True
+        )
+
+        conn.close()
+        return normalized_data, columns, fig
+
+    def clickCompareButton(self):
+        combo1 = self.comboBox1.currentText()
+        combo2 = self.comboBox2.currentText()
+
+        if combo1 != combo2:
+            data1, columns, _ = self.getCourses(combo1)
+            data2, _, _ = self.getCourses(combo2)
+
+            fig = go.Figure()
+
+            fig.add_trace(go.Scatterpolar(
+                r=data1.iloc[0], 
+                theta=columns, 
+                fill='toself',
+                name=f'Golfer {combo1}',
+                marker=dict(color='darkgreen'),
+                line=dict(color='green', width=2)
+            ))
+
+            fig.add_trace(go.Scatterpolar(
+                r=data2.iloc[0], 
+                theta=columns, 
+                fill='toself',
+                name=f'Golfer {combo2}',
+                marker=dict(color='red'),
+                line=dict(color='crimson', width=2)
+            ))
+
+            fig.update_layout(
+                polar=dict(
+                    radialaxis=dict(
+                        tickvals=[.20, .40, .60, .80, 1.0],
+                        ticktext=['20%', '40%', '60%', '80%', '100%'],
+                        range=[0,1]
+                    )
+                ),
+                showlegend=True
+            )
+            
+            fig_html = fig.to_html(include_plotlyjs='cdn')
+            self.webView.setHtml(fig_html)
+        else:
+            self.showRadar(combo1)
+
+    def showRadar(self, course_id):
+        _, _, fig = self.getCourses(course_id)
+
+        if fig is not None:
+            fig_html = fig.to_html(include_plotlyjs='cdn')
+            print(fig_html)
+            self.webView.setHtml(fig_html)
+        else:
+            print("Failed to generate the Golfer's Attributes graph.")
+
+    def on_change(self):
+        course_id = self.comboBox1.currentText()
+        self.showRadar(course_id)
+
+    def clickBackButton(self):
+        self.close()
+
+    def resizeEvent(self, event):
+        self.bgImageLabel.setGeometry(0, 0, self.width(), self.height())
+        self.bgImageLabel.setPixmap(self.bg_image.scaled(self.bgImageLabel.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+
+        # Push bg image to back
+        self.bgImageLabel.lower()
+
+        # Pull buttons forward
+        self.compareButton.raise_()
+        self.comboBox1.raise_()
+        self.comboBox2.raise_()
+
+        super().resizeEvent(event)
 
 class MenuWindow(QMainWindow, QWidget):
     def __init__(self):
@@ -268,7 +467,6 @@ class MenuWindow(QMainWindow, QWidget):
        
         self.bg_image = loadBGImage()
         self.bgImageLabel = QLabel(self)
-        # self.bg_image = QPixmap(r"C:\Users\Smitty Hendrix\Documents\Coding\GolfDataAnalysis\golfappbg.png")
 
         self.buttonStack = QVBoxLayout() 
         self.menuWindow = QWidget()
@@ -276,7 +474,7 @@ class MenuWindow(QMainWindow, QWidget):
         self.initUI()
 
     # Don't look at this bullhonky
-    #class ParabolaWidget(QWidget):
+    # class ParabolaWidget(QWidget):
         def __init__(self):
             super().__init__()            
             self.color_step = 0
@@ -323,7 +521,6 @@ class MenuWindow(QMainWindow, QWidget):
                 y = (x ** 2) // 100 
                 qp.drawPoint(x + width//2, height//2 - y)
 
-
     def initUI(self):
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('File')
@@ -338,14 +535,6 @@ class MenuWindow(QMainWindow, QWidget):
         self.bgImageLabel.setGeometry(0, 0, self.width(), self.height())
         self.bgImageLabel.setPixmap(self.bg_image.scaled(self.bgImageLabel.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
-        # parabolaWindow = QWidget(self)
-        # self.setCentralWidget(parabolaWindow)
-        # self.parabolaLayout = QVBoxLayout(parabolaWindow)
-        # self.parabolaWidget = self.ParabolaWidget()
-        # self.parabolaLayout.addWidget(self.parabolaWidget)
-        # parabolaWindow.setLayout(self.parabolaLayout)
-        # self.resizeEvent(None)
-
         # Button Clicked Actions
         self.addCourseButton.clicked.connect(self.clickAddCourse)
         self.checkCourseDBButton.clicked.connect(self.clickCheckCourseDB)
@@ -357,10 +546,13 @@ class MenuWindow(QMainWindow, QWidget):
             button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             button.setMinimumSize(133, 25)
             button.setMaximumSize(150, 50)
-            button.setStyleSheet("font-size: 12px; font-family: Arial;")
+            button.setStyleSheet("font-size: 12px; font-family: Arial; background-color: white; color: black; border: 1px solid black; padding: 5px;")
+            button.setFlat(False)
         self.exitButton.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.exitButton.setMinimumSize(75, 25)
+        self.exitButton.setMinimumSize(133, 25)
         self.exitButton.setMaximumSize(150, 33)
+        self.exitButton.setFlat(False)
+        self.exitButton.setStyleSheet("font-size: 12px; font-family: Arial; background-color: white; color: black; border: 1px solid black; padding: 5px;")
 
         self.buttonStack.stretch(1)
         self.buttonStack.addWidget(self.addCourseButton)
@@ -381,8 +573,8 @@ class MenuWindow(QMainWindow, QWidget):
         self.addCourseWindow.show()
 
     def clickCheckCourseDB(self):
-        self.courseDBWindow = CourseDatabaseWindow()
-        self.courseDBWindow.show()
+        self.courseDBMenu = CourseDatabaseMenu()
+        self.courseDBMenu.show()
 
     def clickCheckDifficulty(self):
         self.difficultyWindow = DifficultyWindow()
@@ -412,7 +604,7 @@ class MenuWindow(QMainWindow, QWidget):
         self.checkCourseDifficultyButton.raise_()
         self.exitButton.raise_()
 
-        super().resizeEvent(event)
+        super().resizeEvent(event)     
 
 class AddCourseWindow(QMainWindow):
     def __init__(self):
@@ -433,6 +625,8 @@ class AddCourseWindow(QMainWindow):
         self.courseSlopeText = QLineEdit()
         self.courseRatingLabel = QLabel("Rating: ")
         self.courseRatingText = QLineEdit()
+        self.resultsLabel = QLabel("STATUS:")
+        self.resultsLabelImage = QLabel("")
         
         self.addCourseWindow = QWidget()
         self.addCourseLayout = QFormLayout()
@@ -454,29 +648,30 @@ class AddCourseWindow(QMainWindow):
         self.setGeometry(300, 300, 600, 400)
         self.setWindowTitle('Add Course')
 
-        self.addCourseButton.setStyleSheet("font-size: 15px;")
+        self.addCourseButton.setStyleSheet("font-size: 15px; color: black; background-color: white")
         self.addCourseButton.setFixedSize(100, 33)
         self.addCourseButton.clicked.connect(self.clickAddCourse)
 
-        self.backButton.setStyleSheet("font-size: 15px;")
+        self.backButton.setStyleSheet("font-size: 15px; color: black; background-color: white;")
         self.backButton.setFixedSize(75, 25)
         self.backButton.clicked.connect(self.clickBackButton)
         
-        self.courseNameLabel.setStyleSheet("font-size: 15px; color: blue; font-family: Arial;")                                            
-        self.courseNameText.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")
+        self.courseNameLabel.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")                                            
+        self.courseNameText.setStyleSheet("font-size: 15px; color: black; font-family: Arial; background-color: white;")
         self.courseNameText.setPlaceholderText("Name of Course")
-        self.courseTypeLabel.setStyleSheet("font-size: 15px; color: blue; font-family: Arial;")
-        self.courseTypeText.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")
+        self.courseTypeLabel.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")
+        self.courseTypeText.setStyleSheet("font-size: 15px; color: black; font-family: Arial; background-color: white;")
         self.courseTypeText.setPlaceholderText("Type of Grass")
-        self.courseYardageLabel.setStyleSheet("font-size: 15px; color: blue; font-family: Arial;")
-        self.courseYardageText.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")
+        self.courseYardageLabel.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")
+        self.courseYardageText.setStyleSheet("font-size: 15px; color: black; font-family: Arial; background-color: white;")
         self.courseYardageText.setPlaceholderText("Course Length")
-        self.courseSlopeLabel.setStyleSheet("font-size: 15px; color: blue; font-family: Arial;")
-        self.courseSlopeText.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")
+        self.courseSlopeLabel.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")
+        self.courseSlopeText.setStyleSheet("font-size: 15px; color: black; font-family: Arial; background-color: white;")
         self.courseSlopeText.setPlaceholderText("Course Slope")
-        self.courseRatingLabel.setStyleSheet("font-size: 15px; color: blue; font-family: Arial;")     
-        self.courseRatingText.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")
+        self.courseRatingLabel.setStyleSheet("font-size: 15px; color: black; font-family: Arial;")     
+        self.courseRatingText.setStyleSheet("font-size: 15px; color: black; font-family: Arial; background-color: white;")
         self.courseRatingText.setPlaceholderText("Course Rating")
+        self.resultsLabel.setStyleSheet("border: 1px solid black; padding: 5px; font-size: 15px; color: black; font-family: Arial;")
 
         self.addCourseLayout.addRow(self.courseNameLabel, self.courseNameText)
         self.addCourseLayout.addRow(self.courseTypeLabel, self.courseTypeText)
@@ -496,6 +691,9 @@ class AddCourseWindow(QMainWindow):
         addCourseButtonLayout.addStretch(1)
         
         self.mainLayout.addStretch(1)
+        self.mainLayout.addWidget(self.resultsLabel, alignment=Qt.AlignCenter)
+        self.mainLayout.addWidget(self.resultsLabelImage, alignment=Qt.AlignCenter)
+        self.mainLayout.addStretch(1)
         self.mainLayout.addLayout(self.addCourseLayout)
         self.mainLayout.addLayout(addCourseButtonLayout)
         self.mainLayout.addStretch(1)
@@ -506,25 +704,8 @@ class AddCourseWindow(QMainWindow):
 
         self.show()
 
-    # This will need to be updated to be able to send information to the data dictionaries to connect to SQLite3    
-    def clickAddCourse(self):
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        db_path = os.path.join(script_dir, "GolfCourses.db")        
-        
+    def clickAddCourse(self, db_path):
         self.addCourses(db_path)
-        ###
-        # check_entry = checkEntry(storeCourse)
-        # try:
-        #     if storeCourse:
-        #         if check_entry is None:
-        #             addCourses(storeCourse)
-        #         else:
-        #             raise Exception('\nThis course data already exists in the database. You can check the database using menu option "2". ')     
-        #     else:
-        #         print("\nNo courses to add.")
-        # except Exception as e:
-        #     print(e)
-        # checkTable()
         
         self.courseNameText.clear()
         self.courseTypeText.clear()
@@ -559,35 +740,140 @@ class AddCourseWindow(QMainWindow):
         return courseDictList
     
     def addCourses(self, db_path):
-    # Inserts a new course into the Courses table."""
-        conn, cursor = dbConnCourses(db_path)
+        
         courseDictList = self.storeCourseDictList()
-
         add_courses = """
         INSERT OR IGNORE INTO Courses (CourseName, Type, Yardage, Slope, Rating)
         VALUES (?, ?, ?, ?, ?);
         """
 
         for course in courseDictList:
+            if self.checkEntry(db_path) is not None:
+                self.resultsLabelImage.setStyleSheet("border: 5px solid red; padding: 1px; font-size: 15px; background-color: red; font-family: Arial;")
+                self.resultsLabel.setText(f"{course['Course']} already exists in the database.")
+            else:
+                try:
+                    conn, cursor = dbConnCourses(db_path)
+                    cursor.execute(add_courses, (
+                        course['Course'],
+                        course['Type'],
+                        course['Yardage'],
+                        course['Slope'],
+                        course['Rating'],
+                    ))
+                    conn.commit()
+                    conn.close()
+                    self.resultsLabelImage.setStyleSheet("border: 5px solid green; padding: 1px; font-size: 15px; background-color: green; font-family: Arial;")
+                    self.resultsLabel.setText(f"{course['Course']} added successfully.")
+                except sqlite3.Error as e:
+                    print(f"Error adding courses: {course['Course']}, Error: {e}")
 
+    def checkEntry(self, db_path):
+        conn, cursor = dbConnCourses(db_path)
+
+        courseDictList = self.storeCourseDictList()
+        check_entry = """
+        SELECT CourseName FROM Courses
+        WHERE CourseName = ? AND Type = ? AND Yardage = ? AND Slope = ? AND Rating = ?;
+        """
+        
+        for course in courseDictList:
             try:
-                cursor.execute(add_courses, (
+                cursor.execute(check_entry, (
                     course['Course'],
                     course['Type'],
                     course['Yardage'],
                     course['Slope'],
-                    course['Rating'],
-                ))
-                
+                    course['Rating']
+                    ))
+                existing_course = cursor.fetchone()
+                return existing_course
             except sqlite3.Error as e:
                 print(f"Error adding courses: {course['Course']}, Error: {e}")
-
-        conn.commit()
+                return None
         conn.close()
-        print("All courses have been successfully added to the database.")
 
     def clickBackButton(self):
         self.close()
+
+class CourseDatabaseMenu(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.bgImageLabel = QLabel(self)
+        self.bg_image = loadBGImage()
+        self.bgImageLabel.setGeometry(0, 0, self.width(), self.height())
+        self.bgImageLabel.setPixmap(self.bg_image.scaled(self.bgImageLabel.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+
+        self.courseDBWindow = QWidget()
+        self.menuLayout = QVBoxLayout()
+        self.vBox = QVBoxLayout()
+        self.databaseButton = QPushButton("Course Database")
+        self.courseStatsButton = QPushButton("Course Stats")
+        self.backButton = QPushButton("Back")
+        self.buttonStack = QButtonGroup()
+
+        self.initUI()
+
+    def initUI(self):
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('File')
+
+        exitAction = QAction('Exit', self)
+        exitAction.triggered.connect(qApp.quit)
+        fileMenu.addAction(exitAction)
+
+        self.setGeometry(300, 300, 600, 400)
+        self.setWindowTitle('Course Database Menu')
+
+        self.buttonStack.addButton(self.databaseButton)
+        self.buttonStack.addButton(self.courseStatsButton)
+        self.buttonStack.addButton(self.backButton)
+
+        for button in [self.databaseButton, self.courseStatsButton, self.backButton]:
+            button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            button.setMinimumSize(150, 25)
+            button.setMaximumSize(200, 33)
+            button.setStyleSheet("font-size: 12px; font-family: Arial; background-color: white; color: black; border: 1px solid black; padding: 5px;")
+            button.setFlat(False)
+
+        self.vBox.addWidget(self.databaseButton)
+        self.vBox.addWidget(self.courseStatsButton)
+        self.vBox.addWidget(self.backButton)
+        self.menuLayout.addLayout(self.vBox)
+        self.menuLayout.setAlignment(Qt.AlignHCenter)
+        self.courseDBWindow.setLayout(self.menuLayout)
+        self.setCentralWidget(self.courseDBWindow)
+
+        self.databaseButton.clicked.connect(self.databaseButtonClicked)
+        self.courseStatsButton.clicked.connect(self.courseStatsButtonClicked)
+        self.backButton.clicked.connect(self.backButtonClicked)
+
+        self.show()
+
+    def courseStatsButtonClicked(self):
+        self.courseStatsWindow = CourseCompareWindow()
+        self.courseStatsWindow.show()
+
+    def databaseButtonClicked(self):
+        self.courseDBWindow = CourseDatabaseWindow()
+        self.courseDBWindow.show()
+
+    def backButtonClicked(self):
+        self.close()
+
+    def resizeEvent(self, event):
+        self.bgImageLabel.setGeometry(0, 0, self.width(), self.height())
+        self.bgImageLabel.setPixmap(self.bg_image.scaled(self.bgImageLabel.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+
+        # Push bg image to back
+        self.bgImageLabel.lower()
+
+        # Pull buttons forward
+        self.databaseButton.raise_()
+        self.courseStatsButton.raise_()
+        self.backButton.raise_()
+
+        super().resizeEvent(event)
 
 class CourseDatabaseWindow(QMainWindow):
     def __init__(self):
@@ -615,6 +901,10 @@ class CourseDatabaseWindow(QMainWindow):
         self.setGeometry(300, 300, 600, 400)
         self.setWindowTitle('Course Database')
 
+        self.tableWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.tableWidget.setMinimumSize(400, 400)
+        self.tableWidget.setMaximumSize(800, 600)
+
         self.courseDBWindow.setLayout(self.DBLayout)
         self.setCentralWidget(self.courseDBWindow)
         
@@ -628,7 +918,6 @@ class CourseDatabaseWindow(QMainWindow):
     def resizeEvent(self, event):
         self.bgImageLabel.setGeometry(0, 0, self.width(), self.height())
         self.bgImageLabel.setPixmap(self.bg_image.scaled(self.bgImageLabel.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
-        self.tableWidget.setGeometry(100, 100, 400, 100)
 
         # Push image to back
         self.bgImageLabel.lower()
@@ -644,15 +933,9 @@ class CourseDatabaseWindow(QMainWindow):
             script_dir = os.path.dirname(os.path.abspath(__file__))
             db_path = os.path.join(script_dir, "GolfCourses.db")
 
-            print("Connecting to db...")
             time.sleep(0.5)
             with sqlite3.connect(db_path) as conn:
                 cursor = conn.cursor()
-                print("Connected...")
-                time.sleep(0.25)
-                
-                print("Performing Query...")
-                time.sleep(0.25)
 
                 show_courses = """
                 SELECT * FROM Courses;
@@ -660,9 +943,6 @@ class CourseDatabaseWindow(QMainWindow):
 
                 cursor.execute(show_courses)
                 data = cursor.fetchall()
-
-                print("Query executed successfully...")
-                time.sleep(0.25)
 
                 if not data:
                     print("No data found in Courses table.")
@@ -678,11 +958,6 @@ class CourseDatabaseWindow(QMainWindow):
                     for columnIndex, columnData in enumerate(rowData):
                         self.tableWidget.setItem(rowIndex, columnIndex, QTableWidgetItem(str(columnData)))
 
-                print("Table widget popoulated with data...")
-                time.sleep(0.5)                
-                print("Cursor closed...")
-                time.sleep(0.25)
-                print("Connection closed...")
                 return data
                 
         except sqlite3.Error as e:
@@ -760,6 +1035,22 @@ class AddGolferAttributesWindow(QMainWindow):
         self.putting5to30Text.setPlaceholderText("Accuracy of 5-30ft. Putts")
         self.putting30Text.setPlaceholderText("Accuracy of 30+ft. Putts")
 
+        for label in [self.golferIDLabel,
+                        self.driveDistanceLabel,
+                        self.driveAccuracyLabel,
+                        self.approach50to100Label,
+                        self.approach100to150Label,
+                        self.approach150to200Label,
+                        self.approach200Label,
+                        self.atgFairwayLabel,
+                        self.atgRoughLabel,
+                        self.atgBunkerLabel,
+                        self.putting2to5Label,
+                        self.putting5to30Label,
+                        self.putting30Label]:
+            label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            label.setStyleSheet("color: black; font-size: 14px; font-family: Arial;")
+
         for lineEdit in [self.golferIDText, 
                         self.driveDistanceText, 
                         self.driveAccuracyText, 
@@ -776,19 +1067,19 @@ class AddGolferAttributesWindow(QMainWindow):
             lineEdit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding,)
             lineEdit.setMaximumSize(400, 25)
             lineEdit.setMinimumSize(150, 20)
-            lineEdit.setStyleSheet("font-size: 14px; font-family: Arial;")
+            lineEdit.setStyleSheet("font-size: 14px; background-color: white; color: black; font-family: Arial;")
 
         self.addAttributesButton.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.addAttributesButton.setMaximumSize(200, 75)
         self.addAttributesButton.setMinimumSize(150, 50)
         self.addAttributesButton.clicked.connect(self.clickAddAttributesButton)
-        self.addAttributesButton.setStyleSheet("font-size: 12px; font-family: Arial;")
+        self.addAttributesButton.setStyleSheet("font-size: 12px; border: 1px solid black; color: black; background-color: white; font-family: Arial;")
 
         self.backButton.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.backButton.setMinimumSize(150, 25)
         self.backButton.setMaximumSize(200, 33)
         self.backButton.clicked.connect(self.clickBackButton)
-        self.backButton.setStyleSheet("font-size: 12px; font-family: Arial;")
+        self.backButton.setStyleSheet("font-size: 12px; border: 1px solid black; background-color: white; color: black; font-family: Arial;")
 
         self.formLayout.addRow(self.golferIDLabel, self.golferIDText)
         self.formLayout.addRow(self.driveDistanceLabel, self.driveDistanceText)
@@ -977,19 +1268,19 @@ class DifficultyWindow(QMainWindow):
         self.bogeyButton.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.bogeyButton.setMinimumSize(100, 50)
         self.bogeyButton.setMaximumSize(200, 75)
-        self.bogeyButton.setStyleSheet("font-size: 12px; font-family: Arial;")
+        self.bogeyButton.setStyleSheet("font-size: 12px; color: black; background-color: white; border: 1px solid black; font-family: Arial;")
         self.bogeyButton.clicked.connect(self.bogeyButtonClicked)
         
         self.scratchButton.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.scratchButton.setMinimumSize(100, 50)
         self.scratchButton.setMaximumSize(200, 75)
-        self.scratchButton.setStyleSheet("font-size: 12px; font-family: Arial;")
+        self.scratchButton.setStyleSheet("font-size: 12px; color: black; background-color: white; border: 1px solid black; font-family: Arial;")
         self.scratchButton.clicked.connect(self.scratchButtonClicked)
         
         self.backButton.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.backButton.setMinimumSize(75, 25)
         self.backButton.setMaximumSize(200, 33)
-        self.backButton.setStyleSheet("font-size: 12px; font-family: Arial;")
+        self.backButton.setStyleSheet("font-size: 12px; color: black; background-color: white; border: 1px solid black; font-family: Arial;")
         self.backButton.clicked.connect(self.clickBackButton)
 
         self.buttonLayout.addWidget(self.bogeyButton)
@@ -1077,7 +1368,7 @@ class GolferDataWindow(QMainWindow):
         self.addBioButton.clicked.connect(self.clickAddBioButton)
         self.bioButton.clicked.connect(self.clickBioDBButton)
         self.addAttributesButton.clicked.connect(self.clickAddAttributesButton)
-        self.attributesButton.clicked.connect(self.clickAttributesDBButton)
+        self.attributesButton.clicked.connect(self.clickAttributesMenuButton)
         self.backButton.clicked.connect(self.clickBackButton)
 
         self.initUI()
@@ -1097,12 +1388,12 @@ class GolferDataWindow(QMainWindow):
             button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             button.setMinimumSize(200, 33)
             button.setMaximumSize(300, 50)
-            button.setStyleSheet("font-size: 12px; font-family: Arial;")
+            button.setStyleSheet("font-size: 12px; color: black; background-color: white; border: 1px solid black; font-family: Arial;")
 
         self.backButton.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.backButton.setMinimumSize(200, 25)
         self.backButton.setMaximumSize(300, 25)
-        self.backButton.setStyleSheet("font-size: 12px; font-family: Arial;")
+        self.backButton.setStyleSheet("font-size: 12px; color: black; background-color: white; border: 1px solid black; font-family: Arial;")
 
 
         self.buttonStack.addButton(self.bioButton)
@@ -1131,9 +1422,9 @@ class GolferDataWindow(QMainWindow):
         self.attributesWindow = AddGolferAttributesWindow()
         self.attributesWindow.show()
 
-    def clickAttributesDBButton(self):
-        self.attributesDB = ViewGolferAttributesWindow()
-        self.attributesDB.show()
+    def clickAttributesMenuButton(self):
+        self.attributesMenu = GolferAttributesMenu()
+        self.attributesMenu.show()
 
     def clickBackButton(self):
         self.close()
@@ -1144,9 +1435,6 @@ class GolferDataWindow(QMainWindow):
 
         # Push bg image to back
         self.bgImageLabel.lower()
-
-        # Bring main layout to front
-        
 
         super().resizeEvent(event)
 
@@ -1174,7 +1462,10 @@ class ViewGolferBioWindow(QMainWindow):
         fileMenu.addAction(exitAction)
 
         self.setGeometry(300, 300, 650, 400)
-        self.setWindowTitle('Golfer Biography Database') 
+        self.setWindowTitle('Golfer Biography Database')
+
+        self.tableWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.tableWidget.setFixedSize(700, 300)
 
         self.bioWidget.setLayout(self.tableVbox)
         self.setCentralWidget(self.bioWidget)
@@ -1194,14 +1485,8 @@ class ViewGolferBioWindow(QMainWindow):
             script_dir = os.path.dirname(os.path.abspath(__file__))
             db_path = os.path.join(script_dir, "GolfCourses.db")
 
-            print("Connecting to db...")
-            time.sleep(0.5)
             with sqlite3.connect(db_path) as conn:
                 cursor = conn.cursor()
-                print("Connected...")
-                time.sleep(0.25)
-                
-                print("Performing Query...")
                 time.sleep(0.25)
 
                 show_golfers = """
@@ -1211,14 +1496,11 @@ class ViewGolferBioWindow(QMainWindow):
                 cursor.execute(show_golfers)
                 data = cursor.fetchall()
 
-                print("Query executed successfully...")
-                time.sleep(0.25)
-
                 if not data:
                     print("No data found in PlayerBio table.")
                     return
 
-                headers = ["ID", "Name", "Nation", "Height", "Weight", "Hand"]
+                headers = ["ID", "Name", "Age", "Nation", "Height", "Weight", "Hand"]
                 
                 self.tableWidget.setColumnCount(len(headers))
                 self.tableWidget.setHorizontalHeaderLabels(headers)
@@ -1228,11 +1510,6 @@ class ViewGolferBioWindow(QMainWindow):
                     for columnIndex, columnData in enumerate(rowData):
                         self.tableWidget.setItem(rowIndex, columnIndex, QTableWidgetItem(str(columnData)))
 
-                print("Table widget popoulated with data...")
-                time.sleep(0.5)                
-                print("Cursor closed...")
-                time.sleep(0.25)
-                print("Connection closed...")
                 return data
                 
         except sqlite3.Error as e:
@@ -1242,13 +1519,328 @@ class ViewGolferBioWindow(QMainWindow):
     def resizeEvent(self, event):
         self.bgImageLabel.setGeometry(0, 0, self.width(), self.height())
         self.bgImageLabel.setPixmap(self.bg_image.scaled(self.bgImageLabel.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
-        self.tableWidget.setGeometry(100, 100, 400, 100)
 
         # Push image to back
         self.bgImageLabel.lower()
 
         # Pull table forward
         self.tableWidget.raise_()
+
+        super().resizeEvent(event)
+
+class GolferAttributesMenu(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        
+        self.bgImageLabel = QLabel(self)
+        self.bgImageLabel.setGeometry(0, 0, self.width(), self.height())
+        self.bg_image = loadBGImage()
+        self.bgImageLabel.setPixmap(self.bg_image.scaled(self.bgImageLabel.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+
+        self.widget = QWidget()
+        self.vBox = QVBoxLayout()
+
+        self.radarGraphButton = QPushButton('Golfer Stats')
+        self.tableButton =QPushButton('Golfer Database')
+        self.backButton = QPushButton('Back')
+        
+        self.radarGraphButton.clicked.connect(self.radarButtonClicked)
+        self.tableButton.clicked.connect(self.tableButtonClicked)
+        self.backButton.clicked.connect(self.backButtonClicked)
+
+        self.initUI()
+
+    def initUI(self):
+    
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('File')
+
+        exitAction = QAction('Exit', self)
+        exitAction.triggered.connect(qApp.quit)
+        fileMenu.addAction(exitAction)
+
+        self.setGeometry(300, 300, 600, 400)
+        self.setWindowTitle('Player Attributes Menu')
+
+        for button in [self.radarGraphButton, self.tableButton]:
+            button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            button.setStyleSheet("padding: 5px; font-size: 12px; color: black; background-color: white; border: 1px solid black; font-family: Arial;")
+            button.setMinimumSize(200, 33)
+            button.setMaximumSize(250, 50)
+
+        self.backButton.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.backButton.setStyleSheet("padding: 5px; font-size: 12px; color: black; background-color: white; border: 1px solid black; font-family: Arial;")
+        self.backButton.setMinimumSize(200, 25)
+        self.backButton.setMaximumSize(250, 33)
+
+        self.vBox.addWidget(self.radarGraphButton)
+        self.vBox.addWidget(self.tableButton)
+        self.vBox.addWidget(self.backButton)
+
+        self.vBox.setSpacing(10)
+        self.vBox.setContentsMargins(0, 0, 0, 0)
+        self.vBox.setAlignment(Qt.AlignHCenter)
+
+        self.widget.setLayout(self.vBox)
+        self.setCentralWidget(self.widget)
+
+    def radarButtonClicked(self):
+        self.radar = GolferAttributesRadar()
+        self.radar.show()
+
+    def tableButtonClicked(self):
+        self.table = ViewGolferAttributesWindow()
+        self.table.show()
+
+    def backButtonClicked(self):
+        self.close()
+
+    def resizeEvent(self, event):
+        self.bgImageLabel.setGeometry(0, 0, self.width(), self.height())
+        self.bgImageLabel.setPixmap(self.bg_image.scaled(self.bgImageLabel.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+
+        # Push bg image to back
+        self.bgImageLabel.lower()      
+
+        super().resizeEvent(event)
+
+class GolferAttributesRadar(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        
+        self.bgImageLabel = QLabel(self)
+        self.bgImageLabel.setGeometry(0, 0, self.width(), self.height())
+        self.bg_image = loadBGImage()
+        self.bgImageLabel.setPixmap(self.bg_image.scaled(self.bgImageLabel.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+
+        self.webView = QWebEngineView()
+        self.comboBox = QComboBox()
+        self.comboBox2 = QComboBox()
+        self.widget = QWidget()
+        self.hBox = QHBoxLayout()
+        self.vBox = QVBoxLayout()
+        self.compareButton = QPushButton("Compare")
+        self.backButton = QPushButton('Back')
+
+        self.compareButton.clicked.connect(self.clickCompareButton)
+        self.backButton.clicked.connect(self.clickBackButton)
+
+        self.initUI()
+
+    def initUI(self):
+    
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('File')
+
+        exitAction = QAction('Exit', self)
+        exitAction.triggered.connect(qApp.quit)
+        fileMenu.addAction(exitAction)
+
+        self.setGeometry(100, 100, 1000, 1000)
+        self.setWindowTitle('Player Attributes Graph')
+
+        self.webView.setFixedSize(800, 600)
+
+        for button in [self.compareButton, self.backButton]:
+            button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            button.setMaximumSize(200, 33)
+            button.setMinimumSize(250, 25)
+            button.setStyleSheet("font-size: 12px; color: black; background-color: white; border: 1px solid black; font-family: Arial;")
+    
+        for combo in [self.comboBox, self.comboBox2]:
+            combo.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            combo.setMaximumSize(200, 33)
+            combo.setMinimumSize(250, 25)
+            combo.setStyleSheet("font-size: 12px; color: black; background-color: white; border: 1px solid black; font-family: Arial;")
+
+        # Combo Box Populate
+        data = self.comboBoxPop()
+        self.comboBox.addItems(data)
+        self.comboBox.currentIndexChanged.connect(self.on_change)
+        self.comboBox2.addItems(data)
+
+        self.vBox.addStretch(1)
+        self.vBox.addWidget(self.webView)
+        self.vBox.addStretch(1)
+        self.vBox.addWidget(self.comboBox)
+        self.vBox.addWidget(self.comboBox2)
+        self.vBox.addWidget(self.compareButton)
+        self.vBox.addWidget(self.backButton)
+        self.vBox.addStretch(1)
+
+        self.hBox.addLayout(self.vBox)
+        self.hBox.setAlignment(Qt.AlignHCenter)
+
+        self.widget.setLayout(self.hBox)
+        self.setCentralWidget(self.widget)
+
+        self.showRadar(self.comboBox.currentText())
+
+    def grabAttributes(self, golfer_id):
+        conn, cursor = dbConnPlayers()
+ 
+        select_attributes = """
+        SELECT DriveDistance, DriveAccuracy, 
+        "Approach50-100yds", "Approach100-150yds", "Approach150-200yds", "Approach200+yds", 
+        ATGFairway, ATGRough, ATGBunker, "Putting2-5ft", "Putting5-30ft", "Putting30+ft" 
+        FROM GolferAttributes WHERE ID = ?
+        """
+
+        cursor.execute(select_attributes, (golfer_id,))
+        rows = cursor.fetchall()
+
+        columns = [description[0] for description in cursor.description]
+        data = pd.DataFrame(rows, columns=columns)
+
+        max_values = [350] + [1.5] * 11
+        normalized_values = []
+            
+        for idx, column in enumerate(columns):
+            max_val = max_values[idx]
+            normalized_values.append(data[column] / max_val)
+
+        normalized_data = pd.concat(normalized_values, axis=1)       
+
+        fig = go.Figure()
+
+        # fig.add_trace(go.Scatterpolar(
+        #         r=normalized_data.iloc[0],
+        #         theta=columns[2:],
+        #         fill='toself',
+        #         name='Golfer Statistics'
+        # ))
+
+        # fig.update_traces(
+        #     selector=dict(theta=column),
+        #     marker=dict(size=12),
+        #     line=dict(width=2)
+        # )
+
+        colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A5', '#A533FF', '#33FFA5', '#FF5733', '#33FF57', '#3357FF', '#FF33A5', '#A533FF', '#33FFA5']
+
+        fig.add_trace(go.Scatterpolar(
+            r=normalized_data.iloc[0],  # Plotting the first row
+            theta=columns,  # Using the attribute columns
+            fill='toself',
+            fillcolor='lightcoral',
+            name='Golfer Statistics',
+            marker=dict(color=colors),  # Default color marker
+            line=dict(color='crimson', width=2)  # Default color line
+        ))
+
+        # Update the trace colors
+        for i, (category, colors) in enumerate(zip(columns, colors)):
+            fig.add_trace(go.Scatterpolar(
+                r=[normalized_data.iloc[0]],
+                theta=[category],
+                fill='toself',
+                name=category,
+                marker=dict(color=colors),
+                line=dict(color=colors, width=2)
+            ))
+            
+        fig.update_layout(
+            polar=dict(
+                radialaxis=dict(
+                    tickvals=[.20, .40, .60, .80, 1.0],
+                    ticktext=['20%', '40%', '60%', '80%', '100%'],
+                    range=[0,1]
+                )
+            )
+        )
+        conn.close()
+        return normalized_data, columns, fig
+    
+    def grabComboAttributes(self, item):
+        conn, cursor = dbConnPlayers()
+ 
+        player_attributes = """
+        SELECT * FROM GolferAttributes WHERE ID = ?
+        """
+
+        cursor.execute(player_attributes, (item,))
+        rows = cursor.fetchall()
+        conn.close()
+        print(rows)
+        return rows
+    
+    def on_change(self):
+        golfer_id = self.comboBox.currentText()
+        self.showRadar(golfer_id)
+
+    def showRadar(self, golfer_id):
+        _, _, fig = self.grabAttributes(golfer_id)
+
+        if fig is not None:
+            fig_html = fig.to_html(include_plotlyjs='cdn')
+            print(fig_html)
+            self.webView.setHtml(fig_html)
+        else:
+            print("Failed to generate the Golfer's Attributes graph.")
+
+    def comboBoxPop(self):
+        conn, cursor = dbConnPlayers()
+        grab_golfers = "SELECT ID FROM GolferAttributes"
+        cursor.execute(grab_golfers)
+        data = cursor.fetchall()
+
+        conn.close()
+
+        return [item[0] for item in data]
+    
+    def clickCompareButton(self):
+        combo1 = self.comboBox.currentText()
+        combo2 = self.comboBox2.currentText()
+
+        if combo1 != combo2:
+            data1, columns, _ = self.grabAttributes(combo1)
+            data2, _, _ = self.grabAttributes(combo2)
+
+            fig = go.Figure()
+
+            fig.add_trace(go.Scatterpolar(
+                r=data1.iloc[0], 
+                theta=columns, 
+                fill='toself',
+                name=f'Golfer {combo1}',
+                marker=dict(color='darkgreen'),  # Default color marker
+                line=dict(color='green', width=2)  # Default color line
+            ))
+
+            fig.add_trace(go.Scatterpolar(
+                r=data2.iloc[0], 
+                theta=columns, 
+                fill='toself',
+                name=f'Golfer {combo2}',
+                marker=dict(color='red'),  # Default color marker
+                line=dict(color='crimson', width=2)  # Default color line
+            ))
+
+            fig.update_layout(
+                polar=dict(
+                    radialaxis=dict(
+                        tickvals=[.20, .40, .60, .80, 1.0],
+                        ticktext=['20%', '40%', '60%', '80%', '100%'],
+                        range=[0,1]
+                    )
+                ),
+                showlegend=True
+            )
+            
+            fig_html = fig.to_html(include_plotlyjs='cdn')
+            self.webView.setHtml(fig_html)
+        else:
+            self.showRadar(combo1)
+
+    def clickBackButton(self):
+        self.close()
+
+    def resizeEvent(self, event):
+        self.bgImageLabel.setGeometry(0, 0, self.width(), self.height())
+        self.bgImageLabel.setPixmap(self.bg_image.scaled(self.bgImageLabel.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+
+        # Push bg image to back
+        self.bgImageLabel.lower()      
 
         super().resizeEvent(event)
 
@@ -1278,6 +1870,7 @@ class ViewGolferAttributesWindow(QMainWindow):
         self.setGeometry(150, 300, 1600, 400)
         self.setWindowTitle('Golfer Attributes Database') 
        
+        self.tableWidget.setFixedSize(1200, 300)
         self.tableWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.tableVbox.setAlignment(Qt.AlignHCenter)
         self.tableVbox.addWidget(self.tableWidget)
@@ -1296,14 +1889,9 @@ class ViewGolferAttributesWindow(QMainWindow):
             script_dir = os.path.dirname(os.path.abspath(__file__))
             db_path = os.path.join(script_dir, "GolfCourses.db")
 
-            print("Connecting to db...")
             time.sleep(0.5)
             with sqlite3.connect(db_path) as conn:
                 cursor = conn.cursor()
-                print("Connected...")
-                time.sleep(0.25)
-                
-                print("Performing Query...")
                 time.sleep(0.25)
 
                 show_attributes = """
@@ -1315,7 +1903,7 @@ class ViewGolferAttributesWindow(QMainWindow):
                 cursor.execute(show_attributes)
                 data = cursor.fetchall()
 
-                print("Query executed successfully...")
+
                 time.sleep(0.25)
 
                 if not data:
@@ -1334,11 +1922,8 @@ class ViewGolferAttributesWindow(QMainWindow):
                     for columnIndex, columnData in enumerate(rowData):
                         self.tableWidget.setItem(rowIndex, columnIndex, QTableWidgetItem(str(columnData)))
 
-                print("Table widget popoulated with data...")
                 time.sleep(0.5)                
-                print("Cursor closed...")
                 time.sleep(0.25)
-                print("Connection closed...")
                 return data
                 
         except sqlite3.Error as e:
@@ -1412,9 +1997,6 @@ class BogeyGraphWindow(QMainWindow):
         # Push bg image to back
         self.bgImageLabel.lower()
 
-        # Bring main layout to front
-        
-
         super().resizeEvent(event)
 
 class ScratchGraphWindow(QMainWindow):
@@ -1468,10 +2050,7 @@ class ScratchGraphWindow(QMainWindow):
         self.bgImageLabel.setPixmap(self.bg_image.scaled(self.bgImageLabel.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
         # Push bg image to back
-        self.bgImageLabel.lower()
-
-        # Bring main layout to front
-        
+        self.bgImageLabel.lower()      
 
         super().resizeEvent(event)
 
@@ -1491,36 +2070,55 @@ def loadBGImage():
     return bg_image
 
 
-def loadConfig(config_path='GolfDataAnalysis\config.json'):
-
-    # load env. variables
+def loadConfig():
+    # Load environment variables
     load_dotenv()
 
+    # Get the directory of the current file
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Define the potential config paths
+    config_paths = [
+        os.path.join(current_dir, 'config.json'),
+        os.path.join(current_dir, 'GolfDataAnalysis', 'config.json')
+    ]
+
+    # Find the first existing config file
+    config_path = None
+    for path in config_paths:
+        if os.path.exists(path):
+            config_path = path
+            break
+
+    if config_path is None:
+        raise FileNotFoundError("config.json file not found in the expected directories.")
+
+    # Load the configuration file
     with open(config_path, 'r') as config_file:
         config = json.load(config_file)
 
-    # override env. variables, if available
+    # Override environment variables, if available
     config['db_path'] = os.getenv('DB_PATH', config['db_path'])
     config['export_path'] = os.getenv('EXPORT_PATH', config['export_path'])
     config['default_fn'] = os.getenv('DEFAULT_FN', config['default_fn'])
 
     return config
 
-def dbConnCourses(db_file):
+def dbConnCourses():
+    global db_file
+    print(f"db_file: {db_file}")
     script_dir = os.path.dirname(os.path.abspath(__file__))
+    print(f"script_dir: {script_dir}")
     db_path = os.path.join(script_dir, db_file)
-    
-    db = QSqlDatabase.addDatabase('QSQLITE')
-    db.setDatabaseName(db_path)
+    print(f"db_path: {db_path}")
 
-    if not db.open():   
-        print("cannot open database")
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        return conn, cursor
+    except sqlite3.Error as e:
+        print(f"Error connecting to database: {e}")
         return None, None
-
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-
-    return conn, cursor
 
 def dbConnPlayers():
     global db_file
@@ -1528,7 +2126,6 @@ def dbConnPlayers():
     
     script_dir = os.path.dirname(os.path.abspath(__file__))
     print(f"script_dir: {script_dir}")
-
     db_path = os.path.join(script_dir, db_file)
     print(f"db_path: {db_path}")
     
@@ -1542,48 +2139,17 @@ def dbConnPlayers():
         return None, None
 
 def checkTable(db_path):
-    db, conn, cursor = dbConnCourses(db_path)
+    conn, cursor = dbConnCourses(db_path)
 
     if not conn:
         print("Cannot connect to database.")
-        return db, conn, cursor
+        return conn, cursor
         
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     tables = cursor.fetchall()
     print(f"Tables in database: {tables}")
 
     cursor.close()
-    conn.close()
-    db.close()
-
-def checkEntry(courseDictList, db_file):
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(script_dir, db_file)
-    
-    conn, cursor = dbConnCourses(db_path)
-
-    check_entry = """
-    SELECT CourseName FROM Courses
-    WHERE CourseName = ? AND Type = ? AND Yardage = ? AND Slope = ? AND Rating = ?;
-    """
-    
-    for course in courseDictList: 
-        try:
-            cursor.execute(check_entry, (
-                course['Course'],
-                course['Type'],
-                course['Yardage'],
-                course['Slope'],
-                course['Rating']
-                ))
-            existing_course = cursor.fetchone()
-            if existing_course:
-                print(f"{course['Course']} already exists in the database.")
-            else:
-                pass
-        except sqlite3.Error as e:
-            print(f"Error adding courses: {course['Course']}, Error: {e}")
-        return existing_course
     conn.close()
     
 def grabDifficultyScratch():
@@ -1728,23 +2294,17 @@ def readCoursesDatabase():
     else:
         pass
 
+# This class creates random golfers and attributes bio and stats to their profiles
+class RandomPlayers():
+
+    pass
+
 def menu():
     app = QApplication(sys.argv)
     menuWin = MenuWindow()
     menuWin.show()
 
     sys.exit(app.exec_())
-
-# if needed to reset id in sqlite tables, doesn't contain autoincrement right now
-# def reset_autoincrement():
-#     conn = sqlite3.connect("GolfCourses.db")
-#     cursor = conn.cursor()
-#     cursor.execute("SELECT MAX(course_id) FROM Courses;") 
-#     max_id = cursor.fetchone()[0]
-
-#     cursor.execute("UPDATE sqlite_sequence SET seq = ? WHERE name = 'Courses';", (max_id,)) 
-#     conn.commit() 
-#     conn.close()
 
 def main():
     config =loadConfig()
