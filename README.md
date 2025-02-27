@@ -35,6 +35,8 @@ Calculate the difficulty of courses using Slope and Rating
 
 Calculate the efficiency of a Golfer using general data
 
+Store golfer data (attributes & biography)
+
 Visualize course difficulty with interactive bar charts
 
 Visualize strengths and weaknesses of Golfers
@@ -42,6 +44,8 @@ Visualize strengths and weaknesses of Golfers
 Customizable menu options for easy navigation
 
 Error handling and user prompts for smooth interaction
+
+Course difficulty/Golfer Attribute comparisons
 
 - Technologies Used
 
@@ -55,6 +59,8 @@ Pandas: Data manipulation and analysis
 
 PyQt5: GUI for user firnedly experience
 
+Numpy: Mathematical and Scientific computing
+
 - Getting Started
 
 Prerequisites
@@ -64,6 +70,10 @@ Python 3.x
 SQLite
 
 PyQt5
+
+Plotly
+
+Pandas
 
 - Installation
 
@@ -103,7 +113,7 @@ Visualize Data: Generate interactive bar charts showing course difficulties.
 
 - License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is not licensed
 
 - Acknowledgments
 
